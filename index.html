@@ -184,7 +184,9 @@ function render(){
   for(const el of next){
     const old=document.querySelector(`.board[data-dir="${el.dataset.dir}"]`); if(!old)continue;
     const o=[...old.querySelectorAll('.row')], n=[...el.querySelectorAll('.row')].map(x=>x.dataset.key);
-    if(o.length>1&&!n.includes(o[0].dataset.key)&&n[0]===o[1].dataset.key)leaving.push(o[0]);
+    // 先頭から続けて消える列車(同時刻発の2本など)をまとめてフェードアウトさせる
+    let k=0; while(k<o.length&&!n.includes(o[k].dataset.key))k++;
+    if(k>0&&(k===o.length||n[0]===o[k].dataset.key))leaving.push(...o.slice(0,k));
   }
   if(!leaving.length||calm.matches){$('boards').replaceChildren(...next);return}
   animating=true;
